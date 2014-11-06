@@ -1,0 +1,3 @@
+[submodule "Gecko"]
+	path = Gecko
+	url = https://github.com/kolosov/Gecko.git
