@@ -16,12 +16,15 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+/*class GeckoQuestionsCommands {
+public:
+	static std::string Q_LOAD_URL_CMD_PREFIX = "load";
+	static std::string Q_GET_TEXT_CONTENT_CMD = "get_text_content";
+};*/
+
 MozView *myMozView;
 SrvListener *myMozListener;
-
-
-#define MAX_BUF_SIZE 1024*1024
-
+GeckoSrvCmdParser *myCmdParser;
 
 int create_srv_inet_socket () {
      int sockfd, portno=7070;
@@ -63,9 +66,7 @@ int acceptClient(int srvSock) {
     	}
     	g_usleep(500000);
     }
-
 }
-
 
 int processSrvSocket (int clSock, GAsyncQueue *queue) {
 	char buf[MAX_BUF_SIZE];
@@ -142,6 +143,32 @@ srvThreadFunc( gpointer data )
 	return NULL;
 }
 
+bool GeckoSrvCmdParser::ParseCmd(std::string aCmd)
+{
+	//TODO check for new lines
+	aCmd.pop_back();
+
+	if(aCmd.substr(0,Q_LOAD_URL_CMD_PREFIX.length()) == Q_LOAD_URL_CMD_PREFIX) {
+		std::string url = aCmd.substr(Q_LOAD_URL_CMD_PREFIX.length()+1, aCmd.length());
+		//g_print ("\nLOAD_URL:%s\n", url.c_str());
+		myMozView->LoadURI(url.c_str());
+
+	}
+	else if (aCmd == Q_GET_TEXT_CONTENT_CMD) {
+		//g_print ("\nGET_TEXT_CONTENT\n");
+		GetTextContent();
+	}
+	return true;
+}
+
+
+std::string GeckoSrvCmdParser::GetTextContent()
+{
+	std::string textContent="Simple text content";
+
+	return textContent;
+}
+
 static gboolean
 geckoGuiController( gpointer data )
 {
@@ -163,7 +190,9 @@ geckoGuiController( gpointer data )
 		//ssize_t wroteBytes
 		//write(clSock,(const void *) str, (size_t)(strlen(str)+1));
 		g_print("\n>>>GOT MESSAGE: %s<<<\n", str);
-		myMozView->LoadURI(str);
+		std::string cmd(str);
+		myCmdParser->ParseCmd(cmd);
+
 		g_free(str);
 		//g_mutex_unlock(&(mypSrvQ->lock));
 	}
@@ -192,6 +221,8 @@ int main( int   argc,
 
     myMozView = new MozView();
     
+    myCmdParser = new GeckoSrvCmdParser();
+
     window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
     gtk_window_set_default_size(GTK_WINDOW(window), w,h);
     g_signal_connect(window, "delete_event", G_CALLBACK(gtk_main_quit), NULL);
