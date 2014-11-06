@@ -1,3 +1,7 @@
+/*
+ * Author: Sergey Kolosov <kolosov@gmail.com.com>
+ */
+
 #ifndef SRVLISTENER_H
 #define SRVLISTENER_H
 

@@ -1,3 +1,7 @@
+/*
+ * Author: Sergey Kolosov <kolosov@gmail.com.com>
+ */
+
 #include <gtk/gtk.h>
 #include "embed.h"
 #include "EmbeddingSetup.h"

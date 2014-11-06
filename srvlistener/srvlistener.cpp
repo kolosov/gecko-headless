@@ -1,5 +1,8 @@
-#include "srvlistener.h"
+/*
+ * Author: Sergey Kolosov <kolosov@gmail.com.com>
+ */
 
+#include "srvlistener.h"
 #include "geckoembed_config.h"
 
 #include <iostream>
