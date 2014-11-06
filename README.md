@@ -8,5 +8,5 @@ Complilation
     git submodule init
     git submodule update
     mkdir ../build && cd ../build
-    cmake ../Gecko -DGECKO_SDK_PATH=/home/usr/xulrunner-sdk-31
+    cmake ../gecko-headless -DGECKO_SDK_PATH=/home/usr/xulrunner-sdk-31
     make
