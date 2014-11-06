@@ -2,7 +2,7 @@ gecko-headless
 ==============
 This is an applicatation based on gecko-embedding project to control gecko embedded browser by socket. The final goal is a headless gecko-based web-scrapping tool.
 
-Complilation
+Building
 ------------
     clone repo(git clone https://github.com/kolosov/gecko-headless.git) && cd gecko-headless
     git submodule init
