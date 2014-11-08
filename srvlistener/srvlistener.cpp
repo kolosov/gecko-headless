@@ -1,5 +1,5 @@
 /*
- * Author: Sergey Kolosov <kolosov@gmail.com.com>
+ * Author: Sergey Kolosov <kolosov@gmail.com>
  */
 
 #include "srvlistener.h"
