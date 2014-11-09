@@ -2,19 +2,34 @@
  * Author: Sergey Kolosov <kolosov@gmail.com>
  */
 
+//gtk
 #include <gtk/gtk.h>
+
+//gecko-embedding
 #include "embed.h"
 #include "EmbeddingSetup.h"
 #include "srvlistener.h"
-#include "geckosrv.h"
 
+//gecko
+#include <nsCOMPtr.h>
+#include <nsStringAPI.h>
+#include <nsIDOMWindow.h>
+#include <nsIDOMDocument.h>
+#include <nsIDOMElement.h>
+
+#include <nsIDOMNodeList.h>
+#include <nsIDOMNode.h>
+#include <nsINode.h>
+
+//other
 #include <iostream>
-
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+
+#include "geckosrv.h"
 
 /*class GeckoQuestionsCommands {
 public:
@@ -146,7 +161,10 @@ srvThreadFunc( gpointer data )
 bool GeckoSrvCmdParser::ParseCmd(std::string aCmd)
 {
 	//TODO check for new lines
-	aCmd.pop_back();
+
+	if((aCmd.back()=='\r') || (aCmd.back()=='\n')) aCmd.pop_back();
+	if((aCmd.back()=='\r') || (aCmd.back()=='\n')) aCmd.pop_back();
+
 
 	if(aCmd.substr(0,Q_LOAD_URL_CMD_PREFIX.length()) == Q_LOAD_URL_CMD_PREFIX) {
 		std::string url = aCmd.substr(Q_LOAD_URL_CMD_PREFIX.length()+1, aCmd.length());
@@ -156,15 +174,33 @@ bool GeckoSrvCmdParser::ParseCmd(std::string aCmd)
 	}
 	else if (aCmd == Q_GET_TEXT_CONTENT_CMD) {
 		//g_print ("\nGET_TEXT_CONTENT\n");
-		GetTextContent();
+		GetAllTextContent();
 	}
 	return true;
 }
 
 
-std::string GeckoSrvCmdParser::GetTextContent()
+std::string GeckoSrvCmdParser::GetAllTextContent()
 {
-	std::string textContent="Simple text content";
+	//std::string textContent="Simple text content";
+
+	cout << "START TEXTCONTENT" << endl;
+	nsCOMPtr<nsIDOMWindow> myDomWindow = myMozView->GetDOMWindow();
+
+	nsCOMPtr<nsIDOMDocument> myDomDocument;
+
+	myDomWindow->GetDocument(getter_AddRefs(myDomDocument));
+
+	nsCOMPtr<nsIDOMElement> myDomElement;
+	myDomDocument->GetDocumentElement(getter_AddRefs(myDomElement));
+
+	nsString text;
+	std::string textContent;
+
+	myDomElement->GetTextContent(text);
+
+	textContent = ToNewUTF8String(text);
+	cout << textContent << endl;
 
 	return textContent;
 }
@@ -273,3 +309,4 @@ int main( int   argc,
     
     return 0;
 }
+
